@@ -116,7 +116,7 @@ class MyModel():
         for inst in sf2.instruments:
             if inst.name == 'EOI':
                 break
-            sf2Instruments.append(sf2elements.Instrument(inst.name, inst_index))
+            sf2Instruments.append(sf2elements.Instrument(inst.name.replace(" ", "_"), inst_index))
             inst_index += 1
             bag_index = 0
             for bag in inst.bags:

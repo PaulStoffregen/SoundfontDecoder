@@ -35,7 +35,7 @@ class Instrument:
         samps = list()
 
         for samp in self.Samples:
-            temp = str(samp.getName()) + str(samp.getKeyRange())
+            temp = str(samp.getName()) + str(samp.getKeyRange()).replace(" ", "")
             samps.append(temp)
 
         return samps
