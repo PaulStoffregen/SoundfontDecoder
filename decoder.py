@@ -292,7 +292,7 @@ def export_samples(bags, global_bag, num_samples, file_dir, file_title="samples"
     cpp_file_name = "{}_samples.cpp".format(instrument_name)
     with open(file_dir + "/" + cpp_file_name, "w") as cpp_file, open(file_dir + "/" + h_file_name, "w") as h_file:
         # Decode data to sample_data array in header file
-        h_file.write("#pragma once\n#include <AudioStream.h>\n#include <AudioSynthWavetable.h>\n\n")
+        h_file.write("#pragma once\n#include <Audio.h>\n\n")
         h_file.write("extern const sample_data {0}_samples[{1}];\n".format(instrument_name, num_samples))
 
         #Sort bags by key range and expand ranges to fill all key values
