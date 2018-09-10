@@ -293,7 +293,7 @@ def export_samples(bags, global_bag, num_samples, file_dir, file_title="samples"
     with open(file_dir + "/" + cpp_file_name, "w") as cpp_file, open(file_dir + "/" + h_file_name, "w") as h_file:
         # Decode data to sample_data array in header file
         h_file.write("#pragma once\n#include <Audio.h>\n\n")
-        h_file.write("extern const sample_data {0}_samples[{1}];\n".format(instrument_name, num_samples))
+        h_file.write("extern const AudioSynthWavetable::sample_data {0}_samples[{1}];\n".format(instrument_name, num_samples))
 
         #Sort bags by key range and expand ranges to fill all key values
         keyRanges = []
@@ -303,10 +303,10 @@ def export_samples(bags, global_bag, num_samples, file_dir, file_title="samples"
         for keyRange in keyRanges:
             h_file.write("{0}, ".format(keyRange[1]))
         h_file.write("};\n\n")
-        h_file.write("const instrument_data {0} = {{{1}, {0}_ranges, {0}_samples }};\n\n".format(instrument_name, num_samples))
+        h_file.write("const AudioSynthWavetable::instrument_data {0} = {{{1}, {0}_ranges, {0}_samples }};\n\n".format(instrument_name, num_samples))
 
         cpp_file.write("#include \"{}\"\n".format(h_file_name))
-        cpp_file.write("const sample_data {0}_samples[{1}] = {{\n".format(instrument_name, num_samples))
+        cpp_file.write("const AudioSynthWavetable::sample_data {0}_samples[{1}] = {{\n".format(instrument_name, num_samples))
         for i in range(len(bags)):
             out_str = gen_sample_meta_data_string(bags[i], global_bag if global_bag else bags[i], i, instrument_name, keyRanges[i])
             cpp_file.write(out_str)
