@@ -292,25 +292,15 @@ def export_samples(bags, global_bag, num_samples, file_dir, file_title="samples"
     cpp_file_name = "{}_samples.cpp".format(instrument_name)
     with open(file_dir + "/" + cpp_file_name, "w") as cpp_file, open(file_dir + "/" + h_file_name, "w") as h_file:
         # Decode data to sample_data array in header file
-        h_file.write("#pragma once\n#include <Audio.h>\n\n")
-        h_file.write("extern const AudioSynthWavetable::sample_data {0}_samples[{1}];\n".format(instrument_name, num_samples))
+        h_file.write("#pragma once\n#include <Audio.h>\n")
 
         #Sort bags by key range and expand ranges to fill all key values
         keyRanges = []
         getKeyRanges(bags, keyRanges)
 
-        h_file.write("const uint8_t {0}_ranges[] = {{".format(instrument_name))
-        for keyRange in keyRanges:
-            h_file.write("{0}, ".format(keyRange[1]))
-        h_file.write("};\n\n")
-        h_file.write("const AudioSynthWavetable::instrument_data {0} = {{{1}, {0}_ranges, {0}_samples }};\n\n".format(instrument_name, num_samples))
+        h_file.write("extern const AudioSynthWavetable::instrument_data {0};\n".format(instrument_name, num_samples))
 
         cpp_file.write("#include \"{}\"\n".format(h_file_name))
-        cpp_file.write("const AudioSynthWavetable::sample_data {0}_samples[{1}] = {{\n".format(instrument_name, num_samples))
-        for i in range(len(bags)):
-            out_str = gen_sample_meta_data_string(bags[i], global_bag if global_bag else bags[i], i, instrument_name, keyRanges[i])
-            cpp_file.write(out_str)
-        cpp_file.write("};\n")
 
         # For each sample print out sample array to .cpp file and init to .h file
         for i in range(len(bags)):
@@ -326,10 +316,10 @@ def export_samples(bags, global_bag, num_samples, file_dir, file_title="samples"
                 .format(i, instrument_name, re.sub(r'[\W]+', '', bags[i].sample.name), ary_length)
 
             # Write array init to header file.
-            h_file.write("\nextern const uint32_t {0};\n".format(smpl_identifier))
+            #h_file.write("\nextern const uint32_t {0};\n".format(smpl_identifier))
 
             # Write array contents to .cpp
-            cpp_file.write("\nconst uint32_t {0} = {{\n".format(smpl_identifier))
+            cpp_file.write("\nstatic const uint32_t {0} = {{\n".format(smpl_identifier))
 
             # Output 32-bit hex literals
             line_width = 0
@@ -351,6 +341,16 @@ def export_samples(bags, global_bag, num_samples, file_dir, file_title="samples"
                     cpp_file.write('\n')
                 pad_length -= 4
             cpp_file.write("};\n" if line_width == 8 else "\n};\n")
+        cpp_file.write("\nstatic const AudioSynthWavetable::sample_data {0}_samples[{1}] = {{\n".format(instrument_name, num_samples))
+        for i in range(len(bags)):
+            out_str = gen_sample_meta_data_string(bags[i], global_bag if global_bag else bags[i], i, instrument_name, keyRanges[i])
+            cpp_file.write(out_str)
+        cpp_file.write("};\n")
+        cpp_file.write("\nstatic const uint8_t {0}_ranges[] = {{".format(instrument_name))
+        for keyRange in keyRanges:
+            cpp_file.write("{0}, ".format(keyRange[1]))
+        cpp_file.write("};\n\n")
+        cpp_file.write("const AudioSynthWavetable::instrument_data {0} = {{{1}, {0}_ranges, {0}_samples }};\n\n".format(instrument_name, num_samples))
 
 ## Prints out the sample metadata
 # @param bag the bag of the current sample being dedoded
