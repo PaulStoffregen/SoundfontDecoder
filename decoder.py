@@ -306,6 +306,8 @@ def export_samples(bags, global_bag, num_samples, file_dir, file_title="samples"
         for i in range(len(bags)):
             raw_wav_data = bags[i].sample.raw_sample_data
             length_16 = bags[i].sample.duration
+            if bags[i].sample_loop == 1 and bags[i].cooked_loop_end < bags[i].sample.duration:
+                length_16 = bags[i].cooked_loop_end + 1
             length_8 = length_16 * 2
             length_32 = math.ceil(length_16 / 2)
             pad_length = 0 if length_32 % 128 == 0 else 128 - length_32 % 128
@@ -389,6 +391,8 @@ def gen_sample_meta_data_string(bag, global_bag, sample_num, instrument_name, ke
 
     length_bits = 0
     length = bag.sample.duration
+    if bag.sample_loop == 1 and bag.cooked_loop_end < length:
+        length = bag.cooked_loop_end + 1
     len = length
     shift_res = 1
     while len != 0:

@@ -123,7 +123,10 @@ class MyModel():
                 if bag.sample is None:
                     sf2Instruments[-1].setGlobalBag(bag_index)
                 elif bag.sample is not None and bag.sample not in sf2Instruments[-1].Samples:
-                    sf2Instruments[-1].Samples.append(sf2elements.Sample(bag.sample.name, bag_index, bag.key_range, bag.sample.duration))
+                    duration = bag.sample.duration;
+                    if bag.sample_loop == 1 and bag.cooked_loop_end < bag.sample.duration:
+                        duration = bag.cooked_loop_end;
+                    sf2Instruments[-1].Samples.append(sf2elements.Sample(bag.sample.name, bag_index, bag.key_range, duration))
                 bag_index += 1
         # sorted ascending by ascii value of instrument names
         # preserves case but sorts indifferent to it
