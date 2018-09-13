@@ -287,7 +287,7 @@ def decode_all(path, inst_index, global_bag_index):
 # @param file_dir the output directory for the decoded samples
 def export_samples(bags, global_bag, num_samples, file_dir, file_title="samples"):
     instrument_name = file_title
-    instrument_name = ''.join([i for i in instrument_name if not i.isdigit()])
+    #instrument_name = ''.join([i for i in instrument_name if not i.isdigit()])
     h_file_name = "{}_samples.h".format(instrument_name)
     cpp_file_name = "{}_samples.cpp".format(instrument_name)
     with open(file_dir + "/" + cpp_file_name, "w") as cpp_file, open(file_dir + "/" + h_file_name, "w") as h_file:
@@ -305,8 +305,8 @@ def export_samples(bags, global_bag, num_samples, file_dir, file_title="samples"
         # For each sample print out sample array to .cpp file and init to .h file
         for i in range(len(bags)):
             raw_wav_data = bags[i].sample.raw_sample_data
-            length_16 = bags[i].sample.duration
-            if bags[i].sample_loop == 1 and bags[i].cooked_loop_end < bags[i].sample.duration:
+            length_16 = bags[i].sample.end
+            if bags[i].sample_loop == 1 and bags[i].cooked_loop_end < bags[i].sample.end:
                 length_16 = bags[i].cooked_loop_end + 1
             length_8 = length_16 * 2
             length_32 = math.ceil(length_16 / 2)
@@ -390,7 +390,7 @@ def gen_sample_meta_data_string(bag, global_bag, sample_num, instrument_name, ke
         "\t}},\n"
 
     length_bits = 0
-    length = bag.sample.duration
+    length = bag.sample.end
     if bag.sample_loop == 1 and bag.cooked_loop_end < length:
         length = bag.cooked_loop_end + 1
     len = length
@@ -473,7 +473,7 @@ def gen_sample_meta_data_string(bag, global_bag, sample_num, instrument_name, ke
 # @param sample a sample object
 # @return a tuple with (boolean, error_message)
 def check_is_valid_sample(sample):
-    if sample.end_loop > sample.duration:
+    if sample.end_loop > sample.end:
         return False, 'End loop index is larger than sample end index'
     return True, None
 
